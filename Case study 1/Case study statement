@@ -1,0 +1,83 @@
+Case Study: Cloud-Based Data Ingestion and Analytics Pipeline
+Business Scenario
+A retail organization receives daily sales transaction files from multiple regional systems.
+These files land in Azure Blob Storage in CSV format.
+The analytics team wants the data to be cleansed, standardized, and loaded into Snowflake for reporting and downstream analytics.
+The organization uses:
+•	Azure Data Factory (ADF) for orchestration
+•	Azure Databricks for data processing
+•	Snowflake as the cloud data warehouse
+______________
+High-Level Flow
+1.	Sales data arrives in Azure Blob Storage
+2.	ADF triggers a Databricks notebook
+3.	Databricks:
+o	Reads raw CSV data from Blob Storage
+o	Applies basic validations and transformations
+o	Loads the cleaned data into a Snowflake table
+4.	Snowflake serves the data for analytics and BI
+______________
+Sample Input Data (CSV in Azure Blob Storage)
+File Name: sales_transactions_2024_01_01.csv
+Container: raw-sales-data
+order_id,customer_id,region,product_category,quantity,unit_price,order_date
+1001,CUST101,APAC,Electronics,2,45000,2024-01-01
+1002,CUST102,US,Furniture,1,78000,2024-01-01
+1003,CUST103,EU,Clothing,5,3200,2024-01-02
+1004,CUST104,APAC,Electronics,1,55000,2024-01-02
+1005,CUST105,US,Groceries,10,450,2024-01-03
+______________
+Data Quality Rules (Handled in Databricks)
+•	order_id must not be null
+•	quantity > 0
+•	unit_price > 0
+•	Invalid records should be logged and excluded
+______________
+Target Snowflake Table
+Database: RETAIL_DB
+Schema: SALES
+Table: SALES_TRANSACTIONS
+CREATE OR REPLACE TABLE SALES_TRANSACTIONS (
+    ORDER_ID NUMBER,
+    CUSTOMER_ID STRING,
+    REGION STRING,
+    PRODUCT_CATEGORY STRING,
+    QUANTITY NUMBER,
+    UNIT_PRICE NUMBER,
+    TOTAL_AMOUNT NUMBER,
+    ORDER_DATE DATE,
+    LOAD_TIMESTAMP TIMESTAMP
+);
+______________
+Databricks Notebook Logic (Conceptual)
+Step 1: Read from Azure Blob Storage
+•	Use Spark CSV reader
+•	Schema inference enabled
+Step 2: Transform Data
+•	Calculate TOTAL_AMOUNT = quantity * unit_price
+•	Add LOAD_TIMESTAMP
+•	Filter invalid rows
+Step 3: Load into Snowflake
+•	Use Snowflake Spark Connector
+•	Write mode: append
+______________
+Azure Data Factory Orchestration
+ADF Pipeline Design
+1.	Pipeline Trigger
+o	Schedule or event-based
+2.	Databricks Notebook Activity
+o	Pass parameters:
+	Storage account
+	Container name
+	File name
+	Snowflake connection details
+3.	Monitoring
+o	Capture notebook execution status
+o	Fail pipeline if notebook fails
+______________
+Expected Output in Snowflake
+ORDER_ID | CUSTOMER_ID | REGION | PRODUCT_CATEGORY | QUANTITY | UNIT_PRICE | TOTAL_AMOUNT | ORDER_DATE | LOAD_TIMESTAMP
+---------------------------------------------------------------------------------------------------------------
+1001     | CUST101     | APAC   | Electronics      | 2        | 45000      | 90000        | 2024-01-01 | 2024-01-05 10:15:22
+1002     | CUST102     | US     | Furniture        | 1        | 78000      | 78000        | 2024-01-01 | 2024-01-05 10:15:22
+...
