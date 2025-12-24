@@ -1,0 +1,80 @@
+ICICI Insurance Claims Processing and Analytics Pipeline
+Problem Statement
+ICICI Insurance receives insurance claim events in JSON format from multiple digital channels such as mobile apps, partner hospitals, and agent portals.
+The raw claim data needs to be processed in Databricks, orchestrated using Azure Data Factory, and stored in Snowflake for analytics.
+The claims data contains nested and semi-structured information including policy details, claimant information, treatment details, and payment status.
+Business teams require structured and queryable data in Snowflake to analyze approved claim amounts by insurance type and region.
+Architecture Flow
+ICICI Digital Channels (JSON Claims Data)
+               ↓
+Azure Data Lake Storage
+               ↓
+Azure Databricks (JSON validation and standardization)
+               ↓
+Azure Data Factory (pipeline orchestration)
+               ↓
+Snowflake (Semi-Structured JSON Storage)
+               ↓
+Snowpark (JSON-based analytics)
+Sample Input Data (JSON)
+File Name: insurance_claims.json
+{
+"claim_id": "CLM1001",
+ "policy": {
+  "policy_number": "POL9001",
+  "insurance_type": "Health",
+  "coverage_amount": 500000
+ },
+"claimant": {
+  "customer_id": "ICICI_C101",
+  "region": "South"
+ },
+"hospital": {
+   "name": "Apollo Hospital",
+   "city": "Chennai"
+ },
+"treatment": {
+  "diagnosis": "Surgery",
+  "claim_amount": 120000
+ },
+ "payment": {
+  "status": "APPROVED",
+   "payment_mode": "NEFT"
+ },
+"claim_date": "2024-01-15"
+}
+Second record:
+{
+"claim_id": "CLM1002",
+ "policy": {
+  "policy_number": "POL9002",
+  "insurance_type": "Vehicle",
+  "coverage_amount": 300000
+ },
+"claimant": {
+  "customer_id": "ICICI_C102",
+  "region": "West"
+ },
+ "garage": {
+   "name": "ICICI Authorized Garage",
+   "city": "Mumbai"
+ },
+"treatment": {
+  "damage_type": "Accident",
+  "claim_amount": 80000
+ },
+ "payment": {
+  "status": "REJECTED",
+   "payment_mode": "UPI"
+ },
+"claim_date": "2024-01-16"
+}
+Expected Outcome
+Claims data stored in Snowflake as semi-structured JSON
+Ability to analyze approved claims only
+Aggregated view of:
+Total approved claim amount
+Grouped by insurance type
+Grouped by customer region
+Rejected or pending claims excluded from financial analysis
+Data available for downstream reporting and dashboards
