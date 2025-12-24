@@ -1,0 +1,36 @@
+Case Study: Log Analytics Pipeline
+Problem Statement
+An e-commerce platform generates application logs in JSON format from multiple services. These logs are stored in Azure Data Lake Storage but are not suitable for direct analysis due to their semi-structured nature.
+The organization wants to build a simple analytics pipeline to:
+Read JSON logs from ADLS
+Transform and standardize the data using Azure Databricks with Snowpark
+Load the processed data into Snowflake for reporting and analysis
+Sample Input Data (JSON Log)
+{
+  "event_id": "evt_101",
+  "event_time": "2025-09-10T10:15:30Z",
+  "service_name": "order-service",
+  "log_level": "ERROR",
+  "user_id": "U1001",
+  "api_endpoint": "/api/v1/orders",
+  "response_time_ms": 850,
+  "error_message": "Timeout",
+  "region": "IN"
+}
+Expected Output (Snowflake Table)
+APPLICATION_LOGS
+Column Name	Description
+EVENT_ID	Log event identifier
+EVENT_TIME	Event timestamp
+SERVICE_NAME	Service name
+LOG_LEVEL	Log severity
+USER_ID	User identifier
+API_ENDPOINT	API endpoint
+RESPONSE_TIME_MS	Response time
+ERROR_MESSAGE	Error details
+REGION	Region
+ERROR_FLAG	Indicates error logs
+Expected Outcome
+JSON logs are converted into structured records
+Clean data is available in Snowflake for SQL analysis
+Analysts can easily track errors and service performance
